@@ -93,6 +93,7 @@ class Runner:
         ug_socket = {
             'ws': None
         }
+        self.ug_socket = ug_socket
 
         def make_player(ws):
             player = {
@@ -118,7 +119,10 @@ class Runner:
 
             while not ws.closed:
                 # do stuff here i guess...
-                message = ws.receive().lower()
+                message = ws.receive()
+                if message is not None:
+                    message.lower()
+                    print message
                 if message == 'player_state':
                     ws.send(json.dumps(self.current_players.items()))
             ug_socket['ws'] = None
@@ -174,8 +178,9 @@ class Runner:
             from geventwebsocket.handler import WebSocketHandler
             import socket
             host = socket.gethostbyname(socket.gethostname())
-            server = pywsgi.WSGIServer((host, app_port), app, handler_class=WebSocketHandler)
+            server = pywsgi.WSGIServer(('0.0.0.0', app_port), app, handler_class=WebSocketHandler)
             print("Starting server on: http://{}:{}".format(*server.address))
+            print host
             server.serve_forever()
 
         import thread
@@ -237,6 +242,8 @@ class Runner:
                         col = colour[pix - 1]
                         x = np.int((xpos + x) % self.dims[0])
                         pixels[x, y] = col
+        if self.ug_socket['ws'] is not None:
+            self.ug_socket['ws'].send(json.dumps(self.current_players.values()))
         return pixels
 
 
