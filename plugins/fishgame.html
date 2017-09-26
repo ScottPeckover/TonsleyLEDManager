@@ -77,6 +77,9 @@
         </div>
     </div>
 </div>
+<audio controls autoplay loop="loop">
+  <source src="static/Game Ambient Forest loop.wav" type="audio/mpeg">
+</audio>
 </body>
 <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
         integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
@@ -86,8 +89,16 @@
         crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
         integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous"></script>Fsoun
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 <script type="text/javascript">
+
+	$( ".fg-btn i" ).click(function() {
+	new Audio('static/Button_Press_5.mp3').play();
+	});
+
+
     var playSound = function (audio_id) {
         document.getElementById(audio_id).play();
     };
