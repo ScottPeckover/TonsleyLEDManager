@@ -29,13 +29,27 @@
 
         .fg-btn i {
             font-size: 9.5em;
-            text-shadow: 3px 3px 3px #ccc;
+            filter: drop-shadow(2px 2px 2px #ccc);
 
         }
 
         .fg-btn i.active {
             transform: translate(2px, 2px);
-            text-shadow: 1px 1px 1px #ccc;
+            filter: drop-shadow(1px 1px 1px #ccc);
+        }
+
+        .fg-btnSVG {
+            /*background-color: #42A5F5;*/
+
+        }
+
+        .fg-btnSVG {
+            filter: drop-shadow(2px 2px 2px #ccc);
+        }
+
+        .fg-btnSVG.active {
+            transform: translate(2px, 2px);
+            filter: drop-shadow(1px 1px 1px #ccc);
         }
 
         #title {
@@ -59,7 +73,6 @@
 
         <div class="col-4  my-auto">
             <div class="row h-100">
-
                 <div id="boat" class="col-6">
                     <i class="fa fa-ship fa-3x" aria-hidden="true"></i>
                     <!-- Control the hook similar to this https://jsfiddle.net/dhpxt1q3/-->
@@ -67,8 +80,12 @@
                 <div class="col-6">
                     Score: <span id="score">0</span>
                 </div>
-                <div id="button-hook" class="fg-btn col-12">
-                    <i class="fa fa-caret-down fa-5x" aria-hidden="true"></i>
+                <div id="button-hook" class="fg-btnSVG col-12">
+                    <!--<i class="fa fa-caret-down fa-5x" aria-hidden="true"></i>-->
+                    <img src="http://localhost:63342/TonsleyLEDManager/plugins/SVG/DropHook.svg?_ijt=6rfke1gjm1oi70jtf529gtoh97"
+                         alt="Drop Hook"
+                         height="152px"
+                         width="86.85px"/>
                 </div>
             </div>
         </div>
@@ -123,7 +140,7 @@
         var hook_dropped = false;
         $('div[id^="button-"]').on({
             'touchstart mousedown': function (e) {
-                $(this).find('i').addClass('active');
+                $(this).find('i').addClass('active') & $(this).addClass('active');
                 e.stopPropagation();
                 e.preventDefault();
                 var id = $(this).attr('id');
@@ -133,7 +150,7 @@
 //                }
             },
             'touchend mouseup': function (e) {
-                $(this).find('i').removeClass('active');
+                $(this).find('i').removeClass('active') & $(this).removeClass('active');
                 e.stopPropagation();
                 e.preventDefault();
                 ws.send("stop");

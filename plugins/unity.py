@@ -85,7 +85,7 @@ class Runner:
         self.current_players = {}
         game_x_min = 0
         game_x_max = 100
-        self.game_y_max = 20
+        self.game_y_max = 10
         boat_velocity = 0.5
         initial_hook_velocity = .1
         app_port = 5000
@@ -179,8 +179,9 @@ class Runner:
             import socket
             host = socket.gethostbyname(socket.gethostname())
             server = pywsgi.WSGIServer(('0.0.0.0', app_port), app, handler_class=WebSocketHandler)
-            print("Starting server on: http://{}:{}".format(*server.address))
-            print host
+            # print("Starting server on: http://{}:{}".format(*server.address))
+            print("Starting server on: http://{}:{}".format(host, server.server_port))
+            # print host
             server.serve_forever()
 
         import thread
