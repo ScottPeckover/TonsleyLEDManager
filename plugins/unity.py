@@ -1,5 +1,6 @@
 import json
 
+from flask import send_from_directory
 
 class Runner:
     def __init__(self, dims):
@@ -60,7 +61,7 @@ class Runner:
                                                   [0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0],
                                                   [0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0],
                                                   [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-                                              ],[
+                                              ], [
                                                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                                                   [0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0],
                                                   [1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0],
@@ -85,7 +86,7 @@ class Runner:
         self.current_players = {}
         game_x_min = 0
         game_x_max = 100
-        self.game_y_max = 10
+        self.game_y_max = 20
         boat_velocity = 0.5
         initial_hook_velocity = .1
         app_port = 5000
@@ -162,6 +163,10 @@ class Runner:
         import uuid
         qr_codes = set([uuid.uuid4().hex])
 
+        @app.route('/static/<path:filename>')
+        def custom_static(filename):
+            return send_from_directory(app.config['CUSTOM_STATIC_PATH'], filename)
+
         @app.route('/')
         def home():
             # check they sent a a valid qr code
@@ -178,10 +183,9 @@ class Runner:
             from geventwebsocket.handler import WebSocketHandler
             import socket
             host = socket.gethostbyname(socket.gethostname())
-            server = pywsgi.WSGIServer(('0.0.0.0', app_port), app, handler_class=WebSocketHandler)
-            # print("Starting server on: http://{}:{}".format(*server.address))
-            print("Starting server on: http://{}:{}".format(host, server.server_port))
-            # print host
+            server = pywsgi.WSGIServer((host, app_port), app, handler_class=WebSocketHandler)
+            print("Starting server on: http://{}:{}".format(*server.address))
+            print host
             server.serve_forever()
 
         import thread
@@ -225,9 +229,9 @@ class Runner:
                 grid = template['template']
                 colour = thing['colour']
                 if thing['hook_position'] != 0:
-                        boat_width = len(template['template'][0])
-                        pixels[int(thing['xpos'] % self.dims[0]) + boat_width - 1,
-                               13:13 + int(thing['hook_position'])] = fishing_line_in_water
+                    boat_width = len(template['template'][0])
+                    pixels[int(thing['xpos'] % self.dims[0]) + boat_width - 1,
+                    13:13 + int(thing['hook_position'])] = fishing_line_in_water
             else:
                 thing['frame'] += thing['frame_rate']
                 if thing['frame'] >= len(template['template']):
