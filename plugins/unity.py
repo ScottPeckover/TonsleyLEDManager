@@ -106,7 +106,7 @@ class Runner:
                 'ypos': 8,
                 'velocity': 0,
                 'score': 0,
-                'id': ws.handler.client_address
+                'id': ws
             }
             self.current_players[ws] = player
             # inform the unity game about this?
@@ -122,22 +122,22 @@ class Runner:
                 # do stuff here i guess...
                 message = ws.receive()
                 if message is not None:
-                    message.lower()
-                    print message
+                    message = json.loads(str(message))
+                    self.current_players[tuple(message['id'])]['hook_velocity'] = -self.current_players[tuple(message['id'])]['hook_velocity']
                 if message == 'player_state':
                     ws.send(json.dumps(self.current_players.items()))
             ug_socket['ws'] = None
 
         @sockets.route('/client')
         def device_client_socket(ws):
-            make_player(ws)
-            ws.send(json.dumps(self.current_players[ws]))
+            make_player(ws.handler.client_address)
+            ws.send(json.dumps(self.current_players[ws.handler.client_address]))
             while not ws.closed:
                 message = ws.receive()
                 if message is None:
                     break
                 message = message.lower()
-                player_state = self.current_players[ws]
+                player_state = self.current_players[ws.handler.client_address]
                 print("{}: {}".format(player_state['id'][0], message))
                 event_handlers = {
                     'left': None
@@ -156,9 +156,10 @@ class Runner:
                     if player_state['hook_velocity'] == 0:
                         player_state['velocity'] = 0
                         player_state['hook_velocity'] = initial_hook_velocity
-                        # ug_socket['ws'].send('hook dropped')
+                        if self.ug_socket['ws'] is not None:
+                            self.ug_socket['ws'].send('hook dropped: ' + player_state['id'][0] + ' ' + str(player_state['id'][1]))
                 self.send_client_state(ws)
-            del self.current_players[ws]
+            del self.current_players[ws.handler.client_address]
 
         import uuid
         qr_codes = set([uuid.uuid4().hex])
@@ -194,7 +195,7 @@ class Runner:
 
     def send_client_state(self, ws):
         try:
-            ws.send(json.dumps(self.current_players[ws]))
+            ws.send(json.dumps(self.current_players[ws.handler.client_address]))
         except:
             pass
 
@@ -207,9 +208,13 @@ class Runner:
         for ws, player in self.current_players.items():
             player['hook_position'] += player['hook_velocity']
 
-            if player['hook_position'] <= 0:
+            #when hook reaches top
+            if player['hook_position'] < 0:
                 player['hook_position'] = 0
                 player['hook_velocity'] = 0
+                if self.ug_socket['ws'] is not None:
+                    self.ug_socket['ws'].send(
+                        'reeled in: ' + player['id'][0] + ' ' + str(player['id'][1]))
 
             if player['hook_position'] >= self.game_y_max:
                 player['hook_velocity'] = -player['hook_velocity']
@@ -256,4 +261,4 @@ class Runner:
 if __name__ == "__main__":
     from demo import show
 
-    show(Runner, fps=30, rows=17, cols=165, scale=8)
+    show(Runner, fps=10, rows=17, cols=165, scale=8)
