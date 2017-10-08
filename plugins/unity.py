@@ -87,15 +87,16 @@ class Runner:
         game_x_min = 0
         game_x_max = 100
         self.game_y_max = 10
-        boat_velocity = 0.5
-        initial_hook_velocity = .1
+        boat_velocity = 1.5
+        initial_hook_velocity = .2
         app_port = 5000
 
         ug_socket = {
             'ws': None
         }
+        player_sockets = {}
         self.ug_socket = ug_socket
-
+        self.player_sockets = player_sockets
         def make_player(ws):
             player = {
                 'type': 'boat',
@@ -106,9 +107,11 @@ class Runner:
                 'ypos': 8,
                 'velocity': 0,
                 'score': 0,
-                'id': ws
+                'id': ws.handler.client_address,
+                'catch': {'colour': None, 'score': 0}
             }
-            self.current_players[ws] = player
+            self.player_sockets[ws.handler.client_address] = ws
+            self.current_players[ws.handler.client_address] = player
             # inform the unity game about this?
 
         @sockets.route('/unity')
@@ -124,13 +127,13 @@ class Runner:
                 if message is not None:
                     message = json.loads(str(message))
                     self.current_players[tuple(message['id'])]['hook_velocity'] = -self.current_players[tuple(message['id'])]['hook_velocity']
-                if message == 'player_state':
-                    ws.send(json.dumps(self.current_players.items()))
+                    self.current_players[tuple(message['id'])]['catch']['score'] = message['score']
+                    self.current_players[tuple(message['id'])]['catch']['colour'] = [int(s) for s in message['colour'][5:-4].split(',')]
             ug_socket['ws'] = None
 
         @sockets.route('/client')
         def device_client_socket(ws):
-            make_player(ws.handler.client_address)
+            make_player(ws)
             ws.send(json.dumps(self.current_players[ws.handler.client_address]))
             while not ws.closed:
                 message = ws.receive()
@@ -138,7 +141,7 @@ class Runner:
                     break
                 message = message.lower()
                 player_state = self.current_players[ws.handler.client_address]
-                print("{}: {}".format(player_state['id'][0], message))
+                #print("{}: {}".format(player_state['id'][0], message))
                 event_handlers = {
                     'left': None
                 }
@@ -160,6 +163,7 @@ class Runner:
                             self.ug_socket['ws'].send('hook dropped: ' + player_state['id'][0] + ' ' + str(player_state['id'][1]))
                 self.send_client_state(ws)
             del self.current_players[ws.handler.client_address]
+            del self.player_sockets[ws.handler.client_address]
 
         import uuid
         qr_codes = set([uuid.uuid4().hex])
@@ -195,7 +199,7 @@ class Runner:
 
     def send_client_state(self, ws):
         try:
-            ws.send(json.dumps(self.current_players[ws.handler.client_address]))
+            self.player_sockets[ws].send(json.dumps(self.current_players[ws]))
         except:
             pass
 
@@ -212,6 +216,9 @@ class Runner:
             if player['hook_position'] < 0:
                 player['hook_position'] = 0
                 player['hook_velocity'] = 0
+                player['score'] += player['catch']['score']
+                player['catch']['score'] = 0
+                player['catch']['colour'] = None
                 if self.ug_socket['ws'] is not None:
                     self.ug_socket['ws'].send(
                         'reeled in: ' + player['id'][0] + ' ' + str(player['id'][1]))
@@ -238,6 +245,9 @@ class Runner:
                     boat_width = len(template['template'][0])
                     pixels[int(thing['xpos'] % self.dims[0]) + boat_width - 1,
                     13:13 + int(thing['hook_position'])] = fishing_line_in_water
+                    if thing['catch']['colour'] is not None:
+                        pixels[int(thing['xpos'] % self.dims[0]) + boat_width - 1,
+                        13:13 + int(thing['hook_position'])] = thing['catch']['colour']
             else:
                 thing['frame'] += thing['frame_rate']
                 if thing['frame'] >= len(template['template']):

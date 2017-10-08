@@ -143,7 +143,7 @@
 //            console.log(data);
             $('#output').text(event.data);
             $('#boat').css({'color': 'rgb(' + data.colour[0].join(',') + ')'});
-            $('#score').text(Number((data.hook_position).toFixed(2)));
+            $('#score').text(Number((data.score).toFixed(2)));
             if (data.event in events) {
                 events[data.event](data);
             }
