@@ -125,6 +125,8 @@ class Runner:
                 # do stuff here i guess...
                 message = ws.receive()
                 if message is not None:
+                    if message == "":
+                        continue;
                     message = json.loads(str(message))
                     self.current_players[tuple(message['id'])]['hook_velocity'] = -self.current_players[tuple(message['id'])]['hook_velocity']
                     self.current_players[tuple(message['id'])]['catch']['score'] = message['score']
