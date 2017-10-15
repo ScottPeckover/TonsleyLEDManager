@@ -259,11 +259,14 @@ class Runner:
                 colour = thing['colour']
                 if thing['hook_position'] != 0:
                     boat_width = len(template['template'][0])
-                    pixels[int(thing['xpos'] % self.dims[0]) + boat_width - 1,
+                    paintx = (int(thing['xpos'] % self.dims[0]) + boat_width - 1)
+                    paintx = paintx - 165 if paintx > 164 else paintx
+                    pixels[paintx,
                     13:13 + int(thing['hook_position'])] = fishing_line_in_water
                     if thing['catch']['colour'] is not None:
-                        pixels[int(thing['xpos'] % self.dims[0]) + boat_width - 1,
-                        13:13 + int(thing['hook_position'])] = thing['catch']['colour']
+                        paintx = (paintx + 1) - 165 if paintx + 1 > 164 else paintx + 1
+                        pixels[paintx,
+                               13 + int(thing['hook_position']):14 + int(thing['hook_position'])] = thing['catch']['colour']
             else:
                 thing['frame'] += thing['frame_rate']
                 if thing['frame'] >= len(template['template']):
@@ -287,4 +290,4 @@ class Runner:
 if __name__ == "__main__":
     from demo import show
 
-    show(Runner, fps=10, rows=17, cols=165, scale=8)
+    show(Runner, fps=30, rows=17, cols=165, scale=8)
