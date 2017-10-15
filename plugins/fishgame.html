@@ -243,8 +243,6 @@
                     }
                 }
             }
-            ;
-
             setInterval(rotations_per_second, 5000);
             var count = 0;
             var lastRotation = 0;
@@ -336,6 +334,10 @@
                 else {
                     document.getElementById("rotatable-reel-visible").setAttribute("id", "rotatable-reel");
                 }
+            }
+            setInterval(keep_alive,50);
+            function keep_alive() {
+                ws.send('');
             }
         }
     );

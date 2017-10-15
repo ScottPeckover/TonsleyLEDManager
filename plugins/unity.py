@@ -13,13 +13,13 @@ class Runner:
         from flask_sockets import Sockets
         import json
         from random import randint
-        from itertools import cycle
-        from matplotlib import cm
-        num_cols = 512
+        # from itertools import cycle
+        # from matplotlib import cm
+        # num_cols = 512
         # Pick a colour map from here: https://matplotlib.org/users/colormaps.html
-        rainbow = cm.get_cmap('PuBu', num_cols)
-        self.sky_colours = [[int(c * 256) for c in rainbow(i)[:-1]] for i in range(num_cols)]
-        self.sky_colours = cycle(self.sky_colours + self.sky_colours[::-1])
+        # rainbow = cm.get_cmap('PuBu', num_cols)
+        # self.sky_colours = [[int(c * 256) for c in rainbow(i)[:-1]] for i in range(num_cols)]
+        # self.sky_colours = cycle(self.sky_colours + self.sky_colours[::-1])
         app = Flask('UnityGame')
         sockets = Sockets(app)
         self.things = [{
@@ -87,7 +87,7 @@ class Runner:
         self.current_players = {}
         game_x_min = 0
         game_x_max = 100
-        self.game_y_max = 10
+        self.game_y_max = 14
         boat_velocity = 1.5
         initial_hook_velocity = .2
         app_port = 5000
@@ -247,8 +247,8 @@ class Runner:
         np = self.np
         water = [14, 69, 156]
         fishing_line_in_water = [0, 0, 255]
-        # sky = [206, 237, 255]
-        sky = next(self.sky_colours)
+        sky = [255, 141, 28]
+        # sky = next(self.sky_colours)
         pixels = np.full((self.dims[0], self.dims[1], 3), water, dtype=np.uint8)
         pixels[:, 0:13] = sky
         self.update_things()
@@ -290,4 +290,4 @@ class Runner:
 if __name__ == "__main__":
     from demo import show
 
-    show(Runner, fps=30, rows=17, cols=165, scale=8)
+    show(Runner, fps=10, rows=17, cols=165, scale=8)
