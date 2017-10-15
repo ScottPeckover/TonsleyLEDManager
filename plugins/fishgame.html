@@ -7,11 +7,14 @@
     <link href="https://fonts.googleapis.com/css?family=Kanit" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
     <title>
-        Fishing Game
+        AQUA
     </title>
     <style type="text/css">
         html, body {
-            height: 100%
+            height: 100%;
+            min-width: 100%;
+            min-height: 100%;
+            overflow: hidden;
         }
 
         .container-fluid {
@@ -22,15 +25,9 @@
             background-color: #42A5F5;
         }
 
-        .fg-btn {
-            /*background-color: #42A5F5;*/
-
-        }
-
         .fg-btn i {
             font-size: 9.5em;
             filter: drop-shadow(2px 2px 2px #ccc);
-
         }
 
         .fg-btn i.active {
@@ -38,18 +35,30 @@
             filter: drop-shadow(1px 1px 1px #ccc);
         }
 
-        .fg-btnSVG {
-            /*background-color: #42A5F5;*/
-
-        }
-
-        .fg-btnSVG {
+        .fg-btn-SVG {
             filter: drop-shadow(2px 2px 2px #ccc);
         }
 
-        .fg-btnSVG.active {
+        .fg-btn-SVG.active {
             transform: translate(2px, 2px);
             filter: drop-shadow(1px 1px 1px #ccc);
+        }
+
+        #button-hook {
+            display: block;
+        }
+
+        #rotatable-reel {
+            display: none;
+            visibility: hidden;
+            opacity: 0;
+            overflow: hidden;
+            font-size: 0;
+            line-height: 0;
+            height: 0;
+            width: 0;
+            display: inline;
+            text-indent: -9999999px; /* optional but helps in odd browser behavior */
         }
 
         #title {
@@ -57,20 +66,57 @@
             width: 100%;
         }
 
+        #logo {
+            padding-top: 20px;
+            width: 100px;
+            max-width: 100%;
+        }
+
         audio {
             display: none;
         }
 
-    </style>
+        .trigger {
+            cursor: pointer;
+        }
 
+        .scrim {
+            fill: transparent;
+        }
+
+        .wheel {
+            fill: #777777;
+            stroke: #292b2c;
+            stroke-width: 5;
+        }
+
+        .pivot {
+            fill: #292b2c;
+            stroke: #ccc;
+            stroke-width: 5;
+        }
+
+        .handle-arm {
+            fill: #292b2c;
+            stroke: #ccc;
+            stroke-width: 5;
+        }
+
+        .handle {
+            fill: #292b2c;
+            stroke: #ccc;
+            stroke-width: 5;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid h-100">
-    <div class="row h-100 text-center"><h1 id="title" class="text-center">Fishing With Friends</h1>
+    <div class="row h-100 text-center"><h1 id="title" class="text-center"><img id="logo"
+                                                                               src="data:image/png;base64,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"
+                                                                               alt="AQUA"></h1>
         <div id="button-left" class="fg-btn col-4 my-auto">
-            <i class="fa fa-caret-left fa-5x" aria-hidden="true"></i>
+            <i id="caret-left" class="fa fa-caret-left" aria-hidden="true"></i>
         </div>
-
         <div class="col-4  my-auto">
             <div class="row h-100">
                 <div id="boat" class="col-6">
@@ -80,23 +126,42 @@
                 <div class="col-6">
                     Score: <span id="score">0</span>
                 </div>
-                <div id="button-hook" class="fg-btnSVG col-12">
-                    <!--<i class="fa fa-caret-down fa-5x" aria-hidden="true"></i>-->
-                    <img src="http://localhost:63342/TonsleyLEDManager/plugins/SVG/DropHook.svg?_ijt=6rfke1gjm1oi70jtf529gtoh97"
+                <div id="button-hook" class="fg-btn-SVG col-12">
+                    <!--<i class="fa fa-caret-down" aria-hidden="true"></i>-->
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' id='Layer_1' data-name='Layer 1' viewBox='0 0 86.85 152'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:%23292b2c;%7D.cls-2%7Bfill:%23b5b5b5;%7D%3C/style%3E%3C/defs%3E%3Cpath d='M86.85 65a5.4 5.4 0 0 1-1.61 3.82l-38 38a5.33 5.33 0 0 1-7.63 0l-38-38A5.4 5.4 0 0 1 0 65a5.47 5.47 0 0 1 5.43-5.43h76A5.47 5.47 0 0 1 86.85 65z' class='cls-1'/%3E%3Cpath d='M53.27 69v-7.16h-3.19V69a3 3 0 0 0 0 5.18v16a7.38 7.38 0 0 1-14.76 0v-4l2.6.87-2.6-5.72-3.19-6.55v15.4a10.57 10.57 0 1 0 21.14 0v-16a3 3 0 0 0 0-5.18zm-1.6 4.19a1.6 1.6 0 1 1 1.6-1.6 1.6 1.6 0 0 1-1.59 1.58z' class='cls-2'/%3E%3C/svg%3E"
                          alt="Drop Hook"
                          height="152px"
                          width="86.85px"/>
                 </div>
+                <div id="rotatable-reel" class="col-12">
+                    <!--<img id="Images-reel"-->
+                    <!--src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' id='Layer_1' data-name='Layer 1' viewBox='0 0 14 74'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:%23292b2c;stroke:%23b5b5b5;stroke-miterlimit:10;stroke-width:0.5px;%7D%3C/style%3E%3C/defs%3E%3Cpath d='M12.2 37.69l-1.83 24.345a6.02 6.02 0 0 0-6.75 0L1.8 37.69a5.25 5.25 0 0 0 10.41 0z' class='cls-1'/%3E%3Cpath d='M12.25 37l-.045.69a5.25 5.25 0 0 1-10.41 0L1.75 37a5.25 5.25 0 0 1 10.5 0zM13 67a6 6 0 1 1-9.375-4.965 6.02 6.02 0 0 1 6.75 0A6 6 0 0 1 13 67z' class='cls-1'/%3E%3C/svg%3E"-->
+                    <!--alt="Reel"-->
+                    <!--height="152px"-->
+                    <!--width="86.85px"/>-->
+                    <svg id="svg" viewBox="0 0 1000 1000">
+                        <rect id="proxy" class="scrim" x="250" y="250" width="500" height="500"/>
+                        <g id="reel">
+                            <rect class="scrim" x="250" y="250" width="500" height="500"/>
+                            <circle class="wheel" cx="500" cy="500" r="70"/>
+                            <rect class="handle-arm" x="500" y="480" width="200" height="40" transform=""/>
+                            <circle class="pivot" cx="500" cy="500" r="40"/>
+                            <circle class="scrim trigger" cx="500" cy="500" r="1000"/>
+                            <g id="handle">
+                                <circle class="handle" cx="700" cy="500" r="50"/>
+                                <!--<circle class="pivot" cx="700" cy="500" r="10"/>-->
+                                <circle class="scrim trigger" cx="700" cy="500" r="55"/>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
             </div>
         </div>
         <div id="button-right" class="fg-btn col-4 my-auto">
-            <i class="fa fa-caret-right fa-5x" aria-hidden="true"></i>
+            <i id="caret-right" class="fa fa-caret-right" aria-hidden="true"></i>
         </div>
     </div>
 </div>
-<audio controls autoplay loop="loop">
-  <source src="static/Game Ambient Forest loop.wav" type="audio/mpeg">
-</audio>
 </body>
 <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
         integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
@@ -106,75 +171,173 @@
         crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
         integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
-        crossorigin="anonymous"></script>Fsoun
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenMax.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenLite.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/utils/Draggable.min.js"></script>
+
 <script type="text/javascript">
 
-	$( ".fg-btn i" ).click(function() {
-	new Audio('static/Button_Press_5.mp3').play();
-	});
+    //    var button_right = document.getElementById('right-arrow');
+    //    var button_left = document.getElementById('left-arrow');
+    var caret_right = document.getElementById('caret-right');
+    var caret_left = document.getElementById('caret-left');
+    var button_hook = document.getElementById('button-hook');
+    var rotatable_reel = document.getElementById('rotatable-reel');
+    //    var SVG_reel = document.getElementById('Images-reel');
+    var timer_start = false;
+    var reel = document.querySelector("#reel");
+    var proxy = document.querySelector("#proxy");
+    $(".fg-btn i").click(function () {
+        new Audio('static/Button_Press_5.mp3').play();
+    });
 
 
     var playSound = function (audio_id) {
         document.getElementById(audio_id).play();
     };
     $(document).ready(function () {
-        var events = {
-            winner: function (d) {
-                playSound('sound_winner')
-            },
-            loser: function (d) {
-                playSound('sound_loser')
-            },
-            scored: function (d) {
-                playSound('sound_scored')
-            },
-            hooked: function (d) {
-                playSound('sound_hooked')
-            },
-            hook_position: function (d) {
-                $('#score').text(d.hook_position)
+            var events = {
+                winner: function (d) {
+                    playSound('sound_winner')
+                },
+                loser: function (d) {
+                    playSound('sound_loser')
+                },
+                scored: function (d) {
+                    playSound('sound_scored')
+                },
+                hooked: function (d) {
+                    playSound('sound_hooked')
+                },
+                hook_position: function (d) {
+                    $('#score').text(d.hook_position)
+                }
+            };
+            ws = new WebSocket('ws://' + document.domain + ':5000/client');
+            ws.onmessage = function (event) {
+//                console.log(event.data);
+                if (event.data === "fish_hooked" || event.data === "bottom_reached") {
+                    timer_start = true;
+                    button_hook.style.display = 'none';
+                    rotatable_reel.style.display = 'block';
+                    change_div();
+                } else if (event.data === "reeled_in") {
+                    timer_start = false;
+                    button_hook.style.display = 'block';
+                    caret_left.style.display = 'block';
+                    caret_right.style.display = 'block';
+                    rotatable_reel.style.display = 'none';
+                    //Need a way to end the drag
+//                    Draggable.get([reel, proxy]).endDrag();
+                    change_div();
+                } else {
+                    var data = JSON.parse(event.data);
+                    $('#output').text(event.data);
+                    $('#boat').css({'color': 'rgb(' + data.colour[0].join(',') + ')'});
+                    $('#score').text(Number((data.score).toFixed(2)));
+                    if (data.event in events) {
+                        events[data.event](data);
+                    }
+                }
             }
-        };
-        ws = new WebSocket('ws://' + document.domain + ':5000/client');
-        ws.onmessage = function (event) {
-            var data = JSON.parse(event.data);
-//            console.log(data);
-            $('#output').text(event.data);
-            $('#boat').css({'color': 'rgb(' + data.colour[0].join(',') + ')'});
-            $('#score').text(Number((data.score).toFixed(2)));
-            if (data.event in events) {
-                events[data.event](data);
+            ;
+
+            setInterval(rotations_per_second, 5000);
+            var count = 0;
+            var lastRotation = 0;
+            var fullRotation;
+
+            TweenLite.set([reel, proxy], {
+                transformOrigin: "center",
+                rotation: lastRotation
+            });
+
+            Draggable.create(proxy, {
+                type: "rotation",
+                trigger: ".trigger",
+                onPress: function (e) {
+                    var reelContainer = $("#rotatable-reel-visible");
+                    var reelCenter = [reelContainer.offset().left + reelContainer.width() / 2 + 10, reelContainer.offset().top + reelContainer.height() / 2];
+                    var angle = Math.atan2(e.pageX - reelCenter[0], -(e.pageY - reelCenter[1])) * (180 / Math.PI);
+
+//                    console.log(angle);
+                    angle -= 90;
+                    TweenLite.set(reel, {
+                        rotation: angle
+                    });
+                },
+                onDrag: function () {
+                    if (rotatable_reel.style.display === 'block') {
+                        // deltaX: change in rotation
+                        if (this.deltaX > 0) {
+                            TweenLite.set(reel, {
+                                rotation: "+=" + this.deltaX
+                            });
+                            count++;
+//                            console.log(count);
+                        }
+                        if (count % 115 === 0) {
+                            ws.send('plus');
+                            fullRotation++;
+//                            console.log(fullRotation);
+                        }
+                    }
+                },
+                liveSnap: function (currentValue) {
+                    var difference;
+                    if (currentValue < lastRotation) {
+                        difference = lastRotation - currentValue;
+                        difference -= (difference % 360);
+                        lastRotation -= difference;
+                    } else if (currentValue > lastRotation) {
+                        lastRotation = currentValue;
+                    }
+                    return lastRotation;
+                }
+            });
+
+            function rotations_per_second() {
+                if (timer_start) {
+                    if (fullRotation > 2) {
+                        ws.send('minus');
+                        fullRotation--;
+                    }
+                }
             }
-        };
-        var hook_dropped = false;
-        $('div[id^="button-"]').on({
-            'touchstart mousedown': function (e) {
-                $(this).find('i').addClass('active') & $(this).addClass('active');
-                e.stopPropagation();
-                e.preventDefault();
-                var id = $(this).attr('id');
-                ws.send(id.substr(7));
-//                if (!hook_dropped) {
-//
-//                }
-            },
-            'touchend mouseup': function (e) {
-                $(this).find('i').removeClass('active') & $(this).removeClass('active');
-                e.stopPropagation();
-                e.preventDefault();
-                ws.send("stop");
-//                var id = $(this).attr('id');
-//                if ($(this).attr('id') === 'button-hook') {
-//                    if (id === 'button-hook') {
-//                        hook_dropped = true;
-//                    } else {
-//                        $(this).attr('id') === 'button-hook';
-//                    }
-//                }
+
+            $('div[id^="button-"]').on({
+                'touchstart mousedown': function (e) {
+                    $(this).find('i').addClass('active') && $(this).addClass('active');
+                    e.stopPropagation();
+                    e.preventDefault();
+                    var id = $(this).attr('id');
+                    ws.send(id.substr(7));
+                    if ($(this).attr('id') === 'button-hook') {
+                        caret_left.style.display = 'none';
+                        caret_right.style.display = 'none';
+                        fullRotation = 0;
+                    }
+                },
+                'touchend mouseup': function (e) {
+                    $(this).find('i').removeClass('active') && $(this).removeClass('active');
+                    e.stopPropagation();
+                    e.preventDefault();
+                    ws.send("stop");
+                }
+            });
+
+            function change_div() {
+                if (document.getElementById("rotatable-reel")) {
+                    rotatable_reel.setAttribute("id", "rotatable-reel-visible");
+                }
+                else {
+                    document.getElementById("rotatable-reel-visible").setAttribute("id", "rotatable-reel");
+                }
             }
-        });
-    });
+        }
+    );
 </script>
 </html>

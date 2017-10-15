@@ -2,6 +2,7 @@ import json
 
 from flask import send_from_directory
 
+
 class Runner:
     def __init__(self, dims):
         self.dims = dims
@@ -97,6 +98,7 @@ class Runner:
         player_sockets = {}
         self.ug_socket = ug_socket
         self.player_sockets = player_sockets
+
         def make_player(ws):
             player = {
                 'type': 'boat',
@@ -128,9 +130,12 @@ class Runner:
                     if message == "":
                         continue;
                     message = json.loads(str(message))
-                    self.current_players[tuple(message['id'])]['hook_velocity'] = -self.current_players[tuple(message['id'])]['hook_velocity']
+                    self.current_players[tuple(message['id'])]['hook_velocity'] = - \
+                        self.current_players[tuple(message['id'])]['hook_velocity']
                     self.current_players[tuple(message['id'])]['catch']['score'] = message['score']
-                    self.current_players[tuple(message['id'])]['catch']['colour'] = [int(s) for s in message['colour'][5:-4].split(',')]
+                    self.current_players[tuple(message['id'])]['catch']['colour'] = [int(s) for s in
+                                                                                     message['colour'][5:-4].split(',')]
+                    self.player_sockets[tuple(message['id'])].send("fish_hooked")
             ug_socket['ws'] = None
 
         @sockets.route('/client')
@@ -162,7 +167,14 @@ class Runner:
                         player_state['velocity'] = 0
                         player_state['hook_velocity'] = initial_hook_velocity
                         if self.ug_socket['ws'] is not None:
-                            self.ug_socket['ws'].send('hook dropped: ' + player_state['id'][0] + ' ' + str(player_state['id'][1]))
+                            self.ug_socket['ws'].send(
+                                'hook dropped: ' + player_state['id'][0] + ' ' + str(player_state['id'][1]))
+                elif message == 'plus':
+                    if player_state['hook_velocity'] > -.3:
+                        player_state['hook_velocity'] -= .04
+                elif message == 'minus':
+                    if player_state['hook_velocity'] < -.01:
+                        player_state['hook_velocity'] += .04
                 self.send_client_state(ws)
             del self.current_players[ws.handler.client_address]
             del self.player_sockets[ws.handler.client_address]
@@ -214,7 +226,7 @@ class Runner:
         for ws, player in self.current_players.items():
             player['hook_position'] += player['hook_velocity']
 
-            #when hook reaches top
+            # when hook reaches top
             if player['hook_position'] < 0:
                 player['hook_position'] = 0
                 player['hook_velocity'] = 0
@@ -224,9 +236,11 @@ class Runner:
                 if self.ug_socket['ws'] is not None:
                     self.ug_socket['ws'].send(
                         'reeled in: ' + player['id'][0] + ' ' + str(player['id'][1]))
-
+                self.player_sockets[ws].send('reeled_in')
             if player['hook_position'] >= self.game_y_max:
-                player['hook_velocity'] = -player['hook_velocity']
+                player['hook_position'] = self.game_y_max
+                player['hook_velocity'] = -.1
+                self.player_sockets[ws].send('bottom_reached')
             self.send_client_state(ws)
 
     def run(self):
