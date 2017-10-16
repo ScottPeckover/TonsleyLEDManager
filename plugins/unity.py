@@ -290,4 +290,4 @@ class Runner:
 if __name__ == "__main__":
     from demo import show
 
-    show(Runner, fps=10, rows=17, cols=165, scale=8)
+    show(Runner, fps=14, rows=17, cols=165, scale=8)
