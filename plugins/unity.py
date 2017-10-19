@@ -88,6 +88,7 @@ class Runner:
         player_sockets = {}
         self.ug_socket = ug_socket
         self.player_sockets = player_sockets
+        self.host = ''
 
         def make_player(ws):
             player = {
@@ -114,7 +115,7 @@ class Runner:
             if ug_socket['ws'] is not None or ws.handler.client_address[0] != '127.0.0.1':
                 return
             ug_socket['ws'] = ws
-
+            ws.send("qr: " + self.host)
             while not ws.closed:
                 # do stuff here i guess...
                 message = ws.receive()
@@ -193,6 +194,7 @@ class Runner:
             from geventwebsocket.handler import WebSocketHandler
             import socket
             host = socket.gethostbyname(socket.gethostname())
+            self.host = host
             server = pywsgi.WSGIServer(('0.0.0.0', app_port), app, handler_class=WebSocketHandler)
             # print("Starting server on: http://{}:{}".format(*server.address))
             print("Starting server on: http://{}:{}".format(host, server.server_port))
@@ -281,4 +283,4 @@ class Runner:
 if __name__ == "__main__":
     from demo import show
 
-    show(Runner, fps=10, rows=17, cols=165, scale=8)
+    show(Runner, fps=14, rows=17, cols=165, scale=8)
