@@ -36,47 +36,37 @@ class Runner:
             'frame_rate': 0.2,
             'velocity': 1, }
         ]
-        self.things_templates = {'cloud':
-                                     {'colours':
-                                          [[0xd8, 0xad, 0xde], [253, 245, 251]],
-                                      'template':
-                                          np.array([[
-                                              # gratuitously stolen from: https://cdn.dribbble.com/users/1113/screenshots/150244/pixelcloud-dribbble.png
-                                              [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0],
-                                              [0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 1, 1, 0, 0, 0, 0],
-                                              [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 0, 0, 0],
-                                              [0, 0, 1, 1, 2, 2, 1, 1, 2, 2, 2, 2, 1, 0, 0, 0],
-                                              [0, 1, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1, 0, 0],
-                                              [0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0],
-                                              [1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-                                              [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-                                              [1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1],
-                                              [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-                                          ]])
-                                      },
-                                 'gull': {'colours':
-                                              [[77, 77, 77], [253, 245, 251]],
+        self.things_templates = {'cloud': {'colours': [[0xd8, 0xad, 0xde], [253, 245, 251]],
+                                           'template':
+                                               np.array([[
+                                                   # gratuitously stolen from: https://cdn.dribbble.com/users/1113/screenshots/150244/pixelcloud-dribbble.png
+                                                   [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+                                                   [0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 1, 1, 0, 0, 0, 0],
+                                                   [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 0, 0, 0],
+                                                   [0, 0, 1, 1, 2, 2, 1, 1, 2, 2, 2, 2, 1, 0, 0, 0],
+                                                   [0, 1, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1, 0, 0],
+                                                   [0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0],
+                                                   [1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+                                                   [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+                                                   [1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1],
+                                                   [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+                                               ]])
+                                           },
+                                 'gull': {'colours': [[77, 77, 77], [253, 245, 251]],
                                           'template':
                                               np.array([[
-                                                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                                  [0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0],
-                                                  [0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0],
-                                                  [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+                                                  [0, 0, 0, 0, 0, 0, 0],
+                                                  [0, 0, 0, 0, 0, 0, 0],
+                                                  [0, 1, 1, 0, 1, 1, 0],
+                                                  [1, 0, 0, 1, 0, 0, 1],
                                               ], [
-                                                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                                  [0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0],
-                                                  [1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0],
-                                                  [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                                                  [0, 0, 0, 0, 0, 0, 0],
+                                                  [0, 1, 0, 0, 0, 1, 0],
+                                                  [1, 0, 1, 0, 1, 0, 1],
+                                                  [0, 0, 0, 1, 0, 0, 0],
                                               ]])
                                           },
                                  'boat': {'template': [
-                                     # [0,0, 0, 1, 0, 0,0],
-                                     # [0,0, 1, 1, 1, 0,0],
-                                     # [0,1, 1, 1, 1, 1,0],
-                                     # [0,0, 0, 1, 0, 0,0],
-                                     # [1,1, 0, 1, 0, 1,1],
-                                     # [0,1, 1, 1, 1, 1,0],
-                                     # [0,0, 1, 1, 1, 0,0]
                                      [0, 0, 0, 0, 0, 0, 0, 2],
                                      [0, 0, 0, 0, 0, 0, 2, 3],
                                      [0, 1, 1, 1, 0, 2, 0, 3],
@@ -102,6 +92,8 @@ class Runner:
         def make_player(ws):
             player = {
                 'type': 'boat',
+                'name': None,
+                # predefine colours for up to six boats
                 'colour': [[randint(0, 255) for _ in range(3)], [90, 60, 20], [255, 255, 255]],
                 'hook_position': 0,
                 'hook_velocity': 0,
@@ -130,8 +122,7 @@ class Runner:
                     if message == "":
                         continue;
                     message = json.loads(str(message))
-                    self.current_players[tuple(message['id'])]['hook_velocity'] = - \
-                        self.current_players[tuple(message['id'])]['hook_velocity']
+                    self.current_players[tuple(message['id'])]['hook_velocity'] = -self.current_players[tuple(message['id'])]['hook_velocity']
                     self.current_players[tuple(message['id'])]['catch']['score'] = message['score']
                     self.current_players[tuple(message['id'])]['catch']['colour'] = [int(s) for s in
                                                                                      message['colour'][5:-4].split(',')]
@@ -148,7 +139,7 @@ class Runner:
                     break
                 message = message.lower()
                 player_state = self.current_players[ws.handler.client_address]
-                #print("{}: {}".format(player_state['id'][0], message))
+                # print("{}: {}".format(player_state['id'][0], message))
                 event_handlers = {
                     'left': None
                 }
@@ -266,7 +257,7 @@ class Runner:
                     if thing['catch']['colour'] is not None:
                         paintx = (paintx + 1) - 165 if paintx + 1 > 164 else paintx + 1
                         pixels[paintx,
-                               13 + int(thing['hook_position']):14 + int(thing['hook_position'])] = thing['catch']['colour']
+                        13 + int(thing['hook_position']):14 + int(thing['hook_position'])] = thing['catch']['colour']
             else:
                 thing['frame'] += thing['frame_rate']
                 if thing['frame'] >= len(template['template']):
