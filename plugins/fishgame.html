@@ -72,10 +72,6 @@
             max-width: 100%;
         }
 
-        audio {
-            display: none;
-        }
-
         .trigger {
             cursor: pointer;
         }
@@ -124,7 +120,7 @@
                     <!-- Control the hook similar to this https://jsfiddle.net/dhpxt1q3/-->
                 </div>
                 <div class="col-6">
-                    Score: <span id="score">0</span>
+                    Score: <span id="score"><br>0</span>
                 </div>
                 <div id="button-hook" class="fg-btn-SVG col-12">
                     <!--<i class="fa fa-caret-down" aria-hidden="true"></i>-->
@@ -180,38 +176,16 @@
 
 <script type="text/javascript">
 
-    //    var button_right = document.getElementById('right-arrow');
-    //    var button_left = document.getElementById('left-arrow');
     var caret_right = document.getElementById('caret-right');
     var caret_left = document.getElementById('caret-left');
     var button_hook = document.getElementById('button-hook');
     var rotatable_reel = document.getElementById('rotatable-reel');
-    //    var SVG_reel = document.getElementById('Images-reel');
     var timer_start = false;
     var reel = document.querySelector("#reel");
     var proxy = document.querySelector("#proxy");
-    $(".fg-btn i").click(function () {
-        new Audio('static/Button_Press_5.mp3').play();
-    });
 
-
-    var playSound = function (audio_id) {
-        document.getElementById(audio_id).play();
-    };
     $(document).ready(function () {
             var events = {
-                winner: function (d) {
-                    playSound('sound_winner')
-                },
-                loser: function (d) {
-                    playSound('sound_loser')
-                },
-                scored: function (d) {
-                    playSound('sound_scored')
-                },
-                hooked: function (d) {
-                    playSound('sound_hooked')
-                },
                 hook_position: function (d) {
                     $('#score').text(d.hook_position)
                 }
@@ -224,6 +198,14 @@
                     button_hook.style.display = 'none';
                     rotatable_reel.style.display = 'block';
                     change_div();
+                    navigator.vibrate = navigator.vibrate ||
+                        navigator.webkitVibrate ||
+                        navigator.mozVibrate ||
+                        navigator.msVibrate;
+                    if (navigator.vibrate) {
+//                        console.log('we can vibrate');
+                        window.navigator.vibrate(100);
+                    }
                 } else if (event.data === "reeled_in") {
                     timer_start = false;
                     button_hook.style.display = 'block';
@@ -335,7 +317,8 @@
                     document.getElementById("rotatable-reel-visible").setAttribute("id", "rotatable-reel");
                 }
             }
-            setInterval(keep_alive,50);
+            
+            setInterval(keep_alive, 50);
             function keep_alive() {
                 ws.send('');
             }

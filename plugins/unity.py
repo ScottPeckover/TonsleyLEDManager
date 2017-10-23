@@ -40,47 +40,37 @@ class Runner:
             'frame_rate': 0.2,
             'velocity': 1, }
         ]
-        self.things_templates = {'cloud':
-                                     {'colours':
-                                          [[10, 10, 32], [0xd8, 0xad, 0xde]],
-                                      'template':
-                                          np.array([[
-                                              # gratuitously stolen from: https://cdn.dribbble.com/users/1113/screenshots/150244/pixelcloud-dribbble.png
-                                              [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0],
-                                              [0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 1, 1, 0, 0, 0, 0],
-                                              [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 0, 0, 0],
-                                              [0, 0, 1, 1, 2, 2, 1, 1, 2, 2, 2, 2, 1, 0, 0, 0],
-                                              [0, 1, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1, 0, 0],
-                                              [0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0],
-                                              [1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-                                              [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-                                              [1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1],
-                                              [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-                                          ]])
-                                      },
-                                 'gull': {'colours':
-                                              [[77, 77, 77], [253, 245, 251]],
+        self.things_templates = {'cloud': {'colours': [[0xd8, 0xad, 0xde], [253, 245, 251]],
+                                           'template':
+                                               np.array([[
+                                                   # gratuitously stolen from: https://cdn.dribbble.com/users/1113/screenshots/150244/pixelcloud-dribbble.png
+                                                   [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+                                                   [0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 1, 1, 0, 0, 0, 0],
+                                                   [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 0, 0, 0],
+                                                   [0, 0, 1, 1, 2, 2, 1, 1, 2, 2, 2, 2, 1, 0, 0, 0],
+                                                   [0, 1, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1, 0, 0],
+                                                   [0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0],
+                                                   [1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+                                                   [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+                                                   [1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1],
+                                                   [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+                                               ]])
+                                           },
+                                 'gull': {'colours': [[77, 77, 77], [253, 245, 251]],
                                           'template':
                                               np.array([[
-                                                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                                  [0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0],
-                                                  [0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0],
-                                                  [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+                                                  [0, 0, 0, 0, 0, 0, 0],
+                                                  [0, 0, 0, 0, 0, 0, 0],
+                                                  [0, 1, 1, 0, 1, 1, 0],
+                                                  [1, 0, 0, 1, 0, 0, 1],
                                               ], [
-                                                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                                  [0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0],
-                                                  [1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0],
-                                                  [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                                                  [0, 0, 0, 0, 0, 0, 0],
+                                                  [0, 1, 0, 0, 0, 1, 0],
+                                                  [1, 0, 1, 0, 1, 0, 1],
+                                                  [0, 0, 0, 1, 0, 0, 0],
                                               ]])
                                           },
                                  'boat': {'template': [
-                                     # [0,0, 0, 1, 0, 0,0],
-                                     # [0,0, 1, 1, 1, 0,0],
-                                     # [0,1, 1, 1, 1, 1,0],
-                                     # [0,0, 0, 1, 0, 0,0],
-                                     # [1,1, 0, 1, 0, 1,1],
-                                     # [0,1, 1, 1, 1, 1,0],
-                                     # [0,0, 1, 1, 1, 0,0]
                                      [0, 0, 0, 0, 0, 0, 0, 2],
                                      [0, 0, 0, 0, 0, 0, 2, 3],
                                      [0, 1, 1, 1, 0, 2, 0, 3],
@@ -107,6 +97,8 @@ class Runner:
         def make_player(ws):
             player = {
                 'type': 'boat',
+                'name': None,
+                # predefine colours for up to six boats
                 'colour': [[randint(0, 255) for _ in range(3)], [90, 60, 20], [255, 255, 255]],
                 'hook_position': 0,
                 'hook_velocity': 0,
@@ -127,7 +119,7 @@ class Runner:
             if ug_socket['ws'] is not None or ws.handler.client_address[0] != '127.0.0.1':
                 return
             ug_socket['ws'] = ws
-            ws.send('qr: ' + self.host)
+            ws.send("qr: " + self.host)
             while not ws.closed:
                 # do stuff here i guess...
                 message = ws.receive()
@@ -135,8 +127,7 @@ class Runner:
                     if message == "":
                         continue;
                     message = json.loads(str(message))
-                    self.current_players[tuple(message['id'])]['hook_velocity'] = - \
-                    self.current_players[tuple(message['id'])]['hook_velocity']
+                    self.current_players[tuple(message['id'])]['hook_velocity'] = -self.current_players[tuple(message['id'])]['hook_velocity']
                     self.current_players[tuple(message['id'])]['catch']['score'] = message['score']
                     self.current_players[tuple(message['id'])]['catch']['colour'] = [int(s) for s in
                                                                                      message['colour'][5:-4].split(',')]
@@ -281,25 +272,25 @@ def run(self):
                 if thing['catch']['colour'] is not None:
                     paintx = (paintx + 1) - 165 if paintx + 1 > 164 else paintx + 1
                     pixels[paintx,
-                    13 + int(thing['hook_position']):14 + int(thing['hook_position'])] = thing['catch']['colour']
-        else:
-            thing['frame'] += thing['frame_rate']
-            if thing['frame'] >= len(template['template']):
-                thing['frame'] = 0
-            colour = template['colours']
-            grid = template['template'][int(thing['frame'])]
-        xpos = thing['xpos']
-        ypos = thing['ypos']
-        for y, row in enumerate(grid):
-            y = np.int(np.floor(ypos + y))
-            for x, pix in enumerate(row):
-                if pix != 0:
-                    col = colour[pix - 1]
-                    x = np.int((xpos + x) % self.dims[0])
-                    pixels[x, y] = col
-    if self.ug_socket['ws'] is not None:
-        self.ug_socket['ws'].send(json.dumps(self.current_players.values()))
-    return pixels
+                        13 + int(thing['hook_position']):14 + int(thing['hook_position'])] = thing['catch']['colour']
+            else:
+                thing['frame'] += thing['frame_rate']
+                if thing['frame'] >= len(template['template']):
+                    thing['frame'] = 0
+                colour = template['colours']
+                grid = template['template'][int(thing['frame'])]
+            xpos = thing['xpos']
+            ypos = thing['ypos']
+            for y, row in enumerate(grid):
+                y = np.int(np.floor(ypos + y))
+                for x, pix in enumerate(row):
+                    if pix != 0:
+                        col = colour[pix - 1]
+                        x = np.int((xpos + x) % self.dims[0])
+                        pixels[x, y] = col
+        if self.ug_socket['ws'] is not None:
+            self.ug_socket['ws'].send(json.dumps(self.current_players.values()))
+        return pixels
 
 
 if __name__ == "__main__":
