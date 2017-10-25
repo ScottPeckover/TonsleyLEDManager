@@ -40,7 +40,7 @@ class Runner:
             'frame_rate': 0.2,
             'velocity': 1, }
         ]
-        self.things_templates = {'cloud': {'colours': [[0xd8, 0xad, 0xde], [253, 245, 251]],
+        self.things_templates = {'cloud': {'colours': [[0x0c, 0x0c, 0x0c], [253, 245, 251]],
                                            'template':
                                                np.array([[
                                                    # gratuitously stolen from: https://cdn.dribbble.com/users/1113/screenshots/150244/pixelcloud-dribbble.png
@@ -119,7 +119,7 @@ class Runner:
             if ug_socket['ws'] is not None or ws.handler.client_address[0] != '127.0.0.1':
                 return
             ug_socket['ws'] = ws
-            ws.send("qr: " + self.host)
+            ws.send("qr: " + "artworkpc.isd.ad.flinders.edu.au")
             while not ws.closed:
                 # do stuff here i guess...
                 message = ws.receive()
@@ -204,6 +204,7 @@ class Runner:
             # print("Starting server on: http://{}:{}".format(*server.address))
             print("Starting server on: http://{}:{}".format(host, server.server_port))
             # print host
+            self.server = server
             server.serve_forever()
 
         import thread
@@ -214,7 +215,7 @@ class Runner:
         try:
             self.player_sockets[ws].send(json.dumps(self.current_players[ws]))
         except Exception as e:
-            print("Error sending client state", e)
+          #  print("Error sending client state", e)
             return
 
     def update_things(self):
@@ -242,7 +243,9 @@ class Runner:
                 player['hook_velocity'] = -.1
                 self.player_sockets[ws].send('bottom_reached')
             self.send_client_state(ws)
-
+	def finish(self):
+        self.unity_pid.kill()
+        self.server.stop()
     def run(self):
         np = self.np
         json = self.json
