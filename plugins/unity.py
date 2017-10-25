@@ -217,61 +217,56 @@ class Runner:
             print("Error sending client state", e)
             return
 
-def update_things(self):
-    for thing in self.things + self.current_players.values():
-        thing['xpos'] = (thing['xpos'] + thing['velocity']) % self.dims[0]
-        if thing['xpos'] >= self.dims[0]:
-            thing['xpos'] = 0 - len(self.things_templates[thing['type']]['template'][0])
+    def update_things(self):
+        for thing in self.things + self.current_players.values():
+            thing['xpos'] = (thing['xpos'] + thing['velocity']) % self.dims[0]
+            if thing['xpos'] >= self.dims[0]:
+                thing['xpos'] = 0 - len(self.things_templates[thing['type']]['template'][0])
 
-    for ws, player in self.current_players.items():
-        player['hook_position'] += player['hook_velocity']
+        for ws, player in self.current_players.items():
+            player['hook_position'] += player['hook_velocity']
 
-        # when hook reaches top
-        if player['hook_position'] < 0:
-            player['hook_position'] = 0
-            player['hook_velocity'] = 0
-            player['score'] += player['catch']['score']
-            player['catch']['score'] = 0
-            player['catch']['colour'] = None
-            if self.ug_socket['ws'] is not None:
-                self.ug_socket['ws'].send(
-                    'reeled in: ' + player['id'][0] + ' ' + str(player['id'][1]))
-            self.player_sockets[ws].send('reeled_in')
-        if player['hook_position'] >= self.game_y_max:
-            player['hook_position'] = self.game_y_max
-            player['hook_velocity'] = -.1
-            self.player_sockets[ws].send('bottom_reached')
-        self.send_client_state(ws)
+            # when hook reaches top
+            if player['hook_position'] < 0:
+                player['hook_position'] = 0
+                player['hook_velocity'] = 0
+                player['score'] += player['catch']['score']
+                player['catch']['score'] = 0
+                player['catch']['colour'] = None
+                if self.ug_socket['ws'] is not None:
+                    self.ug_socket['ws'].send(
+                        'reeled in: ' + player['id'][0] + ' ' + str(player['id'][1]))
+                self.player_sockets[ws].send('reeled_in')
+            if player['hook_position'] >= self.game_y_max:
+                player['hook_position'] = self.game_y_max
+                player['hook_velocity'] = -.1
+                self.player_sockets[ws].send('bottom_reached')
+            self.send_client_state(ws)
 
-
-def finish(self):
-    self.unity_pid.kill()
-
-
-def run(self):
-    np = self.np
-    json = self.json
-    water = [14, 69, 156]
-    fishing_line_in_water = [0, 0, 255]
-    sky = [255, 141, 28]
-    # sky = next(self.sky_colours)
-    pixels = np.full((self.dims[0], self.dims[1], 3), water, dtype=np.uint8)
-    pixels[:, 0:13] = sky
-    self.update_things()
-    for thing in self.things + self.current_players.values():
-        template = self.things_templates[thing['type']]
-        if thing['type'] == 'boat':
-            grid = template['template']
-            colour = thing['colour']
-            if thing['hook_position'] != 0:
-                boat_width = len(template['template'][0])
-                paintx = (int(thing['xpos'] % self.dims[0]) + boat_width - 1)
-                paintx = paintx - 165 if paintx > 164 else paintx
-                pixels[paintx,
-                13:13 + int(thing['hook_position'])] = fishing_line_in_water
-                if thing['catch']['colour'] is not None:
-                    paintx = (paintx + 1) - 165 if paintx + 1 > 164 else paintx + 1
+    def run(self):
+        np = self.np
+        json = self.json
+        water = [14, 69, 156]
+        fishing_line_in_water = [0, 0, 255]
+        sky = [255, 141, 28]
+        # sky = next(self.sky_colours)
+        pixels = np.full((self.dims[0], self.dims[1], 3), water, dtype=np.uint8)
+        pixels[:, 0:13] = sky
+        self.update_things()
+        for thing in self.things + self.current_players.values():
+            template = self.things_templates[thing['type']]
+            if thing['type'] == 'boat':
+                grid = template['template']
+                colour = thing['colour']
+                if thing['hook_position'] != 0:
+                    boat_width = len(template['template'][0])
+                    paintx = (int(thing['xpos'] % self.dims[0]) + boat_width - 1)
+                    paintx = paintx - 165 if paintx > 164 else paintx
                     pixels[paintx,
+                    13:13 + int(thing['hook_position'])] = fishing_line_in_water
+                    if thing['catch']['colour'] is not None:
+                        paintx = (paintx + 1) - 165 if paintx + 1 > 164 else paintx + 1
+                        pixels[paintx,
                         13 + int(thing['hook_position']):14 + int(thing['hook_position'])] = thing['catch']['colour']
             else:
                 thing['frame'] += thing['frame_rate']
